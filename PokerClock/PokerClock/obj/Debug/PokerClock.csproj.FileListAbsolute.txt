@@ -1,0 +1,10 @@
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\bin\Debug\PokerClock.exe.config
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\bin\Debug\PokerClock.exe
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\bin\Debug\PokerClock.pdb
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.csprojAssemblyReference.cache
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.Form1.resources
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.Properties.Resources.resources
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.csproj.GenerateResource.cache
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.csproj.CoreCompileInputs.cache
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.exe
+C:\Users\松永創\Documents\GitClone\Windows\PokerClock\PokerClock\PokerClock\obj\Debug\PokerClock.pdb
