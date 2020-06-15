@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Media;
 
 namespace PokerClock
 {
@@ -18,6 +19,8 @@ namespace PokerClock
         const int SB = 0, BB = 1, ANTE = 2, TIME = 3;
         //タイマーの処理間隔(Hz)
         const int TIMER_HZ = 10;
+        //サウンドファイル
+        const string SOUND_FILE= "sound.wav";
 
         //ストラクチャーデータ(一次元)
         List<int> blind_structure = new List<int>();
@@ -26,8 +29,12 @@ namespace PokerClock
         bool clock_enable = false;
         //開始時間
         DateTime startTime=DateTime.Now;
+        //開始時の経過時間
+        int initTime = 0;
         //経過時間
         int time = 0;
+        //サウンドプレイヤー
+        SoundPlayer soundPlayer;
 
         public Form1()
         {
@@ -83,6 +90,8 @@ namespace PokerClock
             clock_enable = clock_enable ? false : true;
             //開始時間のリセット
             startTime = DateTime.Now;
+            //開始時経過時間を設定
+            initTime = time;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -230,7 +239,7 @@ namespace PokerClock
             //クロック動作時
             if (clock_enable)
             {
-                if (DateTime.Now.AddSeconds((time+1)*(-1)) >= startTime)
+                if (DateTime.Now.AddSeconds((time-initTime+1)*(-1)) >= startTime)
                 {
                     //時間を進める
                     time++;
@@ -250,13 +259,13 @@ namespace PokerClock
             string nowTime = "0:00";
             if (index * DATA_SIZE < blind_structure.Count)
             {
-                nowTime= ((limit / 60) + ":" + string.Format("{0:D2}",(limit % 60)));
+                nowTime = ((limit / 60) + ":" + string.Format("{0:D2}", (limit % 60)));
             }
             //現在のブラインド表示
-            string nowBlind ="End Tournament";
+            string nowBlind = "End Tournament";
             if (index * DATA_SIZE < blind_structure.Count)
             {
-                nowBlind=
+                nowBlind =
                     blind_structure[index * DATA_SIZE + SB] + "/" + blind_structure[index * DATA_SIZE + BB] +
                     Environment.NewLine + blind_structure[index * DATA_SIZE + ANTE];
             }
@@ -264,16 +273,23 @@ namespace PokerClock
             string nextBlind = "Final Blind";
             if ((index + 1) * DATA_SIZE < blind_structure.Count)
             {
-                nextBlind=
+                nextBlind =
                     "Next" + Environment.NewLine +
-                    blind_structure[(index + 1) * DATA_SIZE + SB] + "/" + blind_structure[(index + 1) * DATA_SIZE + BB]+
-                    Environment.NewLine+blind_structure[(index+1)*DATA_SIZE+ANTE];
+                    blind_structure[(index + 1) * DATA_SIZE + SB] + "/" + blind_structure[(index + 1) * DATA_SIZE + BB] +
+                    Environment.NewLine + blind_structure[(index + 1) * DATA_SIZE + ANTE];
             }
 
             //表示を更新する
             label1.Text = nowTime;
             label2.Text = nowBlind;
             label3.Text = nextBlind;
+
+            //ブラインドアップ効果音
+            if (limit <= 1)
+            {
+                soundPlayer = new SoundPlayer(SOUND_FILE);
+                soundPlayer.Play();
+            }
         }
 
         private (int,int) LimitTime()
