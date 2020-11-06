@@ -20,7 +20,8 @@ namespace PokerClock
         //タイマーの処理間隔(Hz)
         const int TIMER_HZ = 10;
         //サウンドファイル
-        const string SOUND_FILE= "sound.wav";
+        const string SOUND_FILE_MAIN = "sound_main.wav";
+        const string SOUND_FILE_PRE = "sound_pre.wav";
 
         //ストラクチャーデータ(一次元)
         List<int> blind_structure = new List<int>();
@@ -28,13 +29,14 @@ namespace PokerClock
         //クロックの動作フラグ
         bool clock_enable = false;
         //開始時間
-        DateTime startTime=DateTime.Now;
+        DateTime startTime = DateTime.Now;
         //開始時の経過時間
         int initTime = 0;
         //経過時間
         int time = 0;
         //サウンドプレイヤー
-        SoundPlayer soundPlayer;
+        SoundPlayer soundPlayer_main;
+        SoundPlayer soundPlayer_pre;
 
         public Form1()
         {
@@ -54,7 +56,7 @@ namespace PokerClock
                     Stream stream = openFileDialog.OpenFile();
 
                     //読み込む
-                    using(StreamReader reader=new StreamReader(stream))
+                    using (StreamReader reader = new StreamReader(stream))
                     {
                         try
                         {
@@ -72,7 +74,7 @@ namespace PokerClock
                             //完了通知
                             label4.Text = "Load Complete";
                         }
-                        catch(FormatException exception)
+                        catch (FormatException exception)
                         {
                             //例外発生時はストラクチャーデータはnullとする
                             blind_structure.Clear();
@@ -82,16 +84,18 @@ namespace PokerClock
                     }
                 }
             }
+
+            //音声読み込み
+            soundPlayer_main = new SoundPlayer(SOUND_FILE_MAIN);
+            soundPlayer_pre = new SoundPlayer(SOUND_FILE_PRE);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             //クロック動作を反転
             clock_enable = clock_enable ? false : true;
-            //開始時間のリセット
-            startTime = DateTime.Now;
-            //開始時経過時間を設定
-            initTime = time;
+            //時間をセット
+            SetTime();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -101,136 +105,97 @@ namespace PokerClock
             {
                 return;
             }
-                //経過時間をリセット
-                time = 0;
-                //再描画
-                RepaintText();
+            //経過時間をリセット
+            time = 0;
+
+            //時間をセット
+            SetTime();
+            //再描画
+            RepaintText();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
             //残り時間とブラインドレベルのインデックス
             int limit, index;
             (limit, index) = LimitTime();
 
-            //リスト外部への参照防止
-            if (index <= 0)
+            //経過時間を計算
+            time = 0;
+            for (int i = 0; i <= index - 2; i++)
             {
-                time = 0;
-            }
-            else
-            {
-                time -= limit + blind_structure[(index - 1) * DATA_SIZE + TIME]*60;
+                time += blind_structure[i * DATA_SIZE + TIME] * 60;
             }
 
+            SetTime();
             RepaintText();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
             //残り時間とブラインドレベルのインデックス
             int limit, index;
             (limit, index) = LimitTime();
 
             //リスト外部への参照防止
-            if ((index+1)*DATA_SIZE >= blind_structure.Count)
+            if ((index + 1) * DATA_SIZE >= blind_structure.Count)
             {
                 time = int.MaxValue;
             }
             else
             {
-                time +=limit;
+                time += limit;
             }
 
+            SetTime();
             RepaintText();
-
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
+            time -= 10 * 60;
 
-                time -= 10 * 60;
-
+            SetTime();
             RepaintText();
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
+            time -= 1 * 60;
 
-                time -= 1 * 60;
-
+            SetTime();
             RepaintText();
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
+            time -= 10;
 
-                time -= 10;
-
+            SetTime();
             RepaintText();
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
+            time += 10;
 
-                time += 10;
-
+            SetTime();
             RepaintText();
         }
 
         private void button10_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
+            time += 1 * 60;
 
-                time += 1*60;
-
+            SetTime();
             RepaintText();
         }
 
         private void button11_Click(object sender, EventArgs e)
         {
-            //クロック停止時のみ動作
-            if (clock_enable)
-            {
-                return;
-            }
+            time += 10 * 60;
 
-                time += 10*60;
-
+            SetTime();
             RepaintText();
         }
 
@@ -239,7 +204,7 @@ namespace PokerClock
             //クロック動作時
             if (clock_enable)
             {
-                if (DateTime.Now.AddSeconds((time-initTime+1)*(-1)) >= startTime)
+                if (DateTime.Now.AddSeconds((time - initTime + 1) * (-1)) >= startTime)
                 {
                     //時間を進める
                     time++;
@@ -274,7 +239,7 @@ namespace PokerClock
             if ((index + 1) * DATA_SIZE < blind_structure.Count)
             {
                 nextBlind =
-                    "Next" + Environment.NewLine +
+                    "Next:"+ blind_structure[(index + 1) * DATA_SIZE + TIME] + "min" + Environment.NewLine +
                     blind_structure[(index + 1) * DATA_SIZE + SB] + "/" + blind_structure[(index + 1) * DATA_SIZE + BB] +
                     Environment.NewLine + blind_structure[(index + 1) * DATA_SIZE + ANTE];
             }
@@ -284,15 +249,30 @@ namespace PokerClock
             label2.Text = nowBlind;
             label3.Text = nextBlind;
 
-            //ブラインドアップ効果音
-            if (limit <= 1)
+            //効果音
+            switch (limit)
             {
-                soundPlayer = new SoundPlayer(SOUND_FILE);
-                soundPlayer.Play();
+                case 1:
+                    soundPlayer_main.Play();
+                    break;
+                case 5:
+                case 10:
+                case 30:
+                case 60:
+                    soundPlayer_pre.Play();
+                    break;
             }
         }
 
-        private (int,int) LimitTime()
+        private void SetTime()
+        {
+            //開始時間のリセット
+            startTime = DateTime.Now;
+            //開始時経過時間を設定
+            initTime = time;
+        }
+
+        private (int, int) LimitTime()
         {
             //値をいじるのでコピー
             int limit = time;
@@ -308,7 +288,7 @@ namespace PokerClock
                 //インデックスをずらす
                 index++;
                 //リスト外部の参照防止
-                if(index * DATA_SIZE >= blind_structure.Count)
+                if (index * DATA_SIZE >= blind_structure.Count)
                 {
                     return (0, index);
                 }
@@ -316,7 +296,7 @@ namespace PokerClock
 
             limit = blind_structure[index * DATA_SIZE + TIME] * 60 - limit;
 
-            return (limit,index);
+            return (limit, index);
         }
     }
 }

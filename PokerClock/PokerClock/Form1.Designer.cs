@@ -73,7 +73,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 2;
-            this.button3.Text = "Path";
+            this.button3.Text = "File";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -86,7 +86,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(1160, 314);
             this.label1.TabIndex = 3;
-            this.label1.Text = "99:99";
+            this.label1.Text = "--:--";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // button4
@@ -164,7 +164,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(1160, 258);
             this.label2.TabIndex = 10;
-            this.label2.Text = "10000/20000\r\n20000";
+            this.label2.Text = "---/---\r\n---";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label3
@@ -175,7 +175,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(364, 126);
             this.label3.TabIndex = 11;
-            this.label3.Text = "Next\r\n20000/40000\r\n40000";
+            this.label3.Text = "Next:--\r\n---/---\r\n---";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label4
